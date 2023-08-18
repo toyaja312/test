@@ -1,0 +1,5 @@
+{{#user}
+Name: Toyaja M
+Skills: Manual and Automated testing
+Email: toyaja312@gmail.com
+{{/user}}
