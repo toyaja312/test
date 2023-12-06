@@ -1,0 +1,18 @@
+name: Scheduled Job
+
+on:
+  schedule:
+    - cron: '0 12 * * *'  # This cron job runs every day at 12:00 PM UTC
+
+jobs:
+  run-scheduled-job:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Run Scheduled Job
+        run: |
+          echo "This job ran on $(date)"
+
