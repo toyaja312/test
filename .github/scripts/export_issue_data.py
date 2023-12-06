@@ -8,12 +8,12 @@ def export_issue_data():
     token = os.getenv("GITHUB_TOKEN")
 
     # Fetch open issues data using the GitHub API
-    open_issues_url = f"https://api.github.com/repos/{repo_owner}/{repo_name}/issues?state=open"
+    open_issues_url = f"https://api.github.com/repos/toyaja312/test/issues?state=open"
     open_issues_response = requests.get(open_issues_url, headers={"Authorization": f"Bearer {token}"})
     open_issues_data = open_issues_response.json()
 
     # Fetch closed issues data using the GitHub API
-    closed_issues_url = f"https://api.github.com/repos/{repo_owner}/{repo_name}/issues?state=closed"
+    closed_issues_url = f"https://api.github.com/repos/toyaja312/test/issues?state=closed"
     closed_issues_response = requests.get(closed_issues_url, headers={"Authorization": f"Bearer {token}"})
     closed_issues_data = closed_issues_response.json()
 
