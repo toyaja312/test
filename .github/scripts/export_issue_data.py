@@ -1,31 +1,32 @@
-import os
-import requests
-import json
+const fs = require('fs');
+const fetch = require('node-fetch'); // Assuming you are running this in a Node.js environment
 
-def export_issue_data():
-    repo_owner = os.getenv("GITHUB_REPOSITORY_OWNER")
-    repo_name = os.getenv("GITHUB_REPOSITORY_NAME")
-    token = os.getenv("GITHUB_TOKEN")
+async function exportIssueData() {
+    const repoOwner = process.env.GITHUB_REPOSITORY_OWNER;
+    const repoName = process.env.GITHUB_REPOSITORY_NAME;
+    const token = process.env.GITHUB_TOKEN;
 
-    # Fetch open issues data using the GitHub API
-    open_issues_url = f"https://api.github.com/repos/toyaja312/test/issues?state=open"
-    open_issues_response = requests.get(open_issues_url, headers={"Authorization": f"Bearer {token}"})
-    open_issues_data = open_issues_response.json()
+    // Fetch open issues data using the GitHub API
+    const openIssuesUrl = `https://api.github.com/repos/{repoOwner}/{repoName}/issues?state=open`;
+    const openIssuesResponse = await fetch(openIssuesUrl, { headers: { Authorization: `Bearer ${token}` } });
+    const openIssuesData = await openIssuesResponse.json();
 
-    # Fetch closed issues data using the GitHub API
-    closed_issues_url = f"https://api.github.com/repos/toyaja312/test/issues?state=closed"
-    closed_issues_response = requests.get(closed_issues_url, headers={"Authorization": f"Bearer {token}"})
-    closed_issues_data = closed_issues_response.json()
+    // Fetch closed issues data using the GitHub API
+    const closedIssuesUrl = `https://api.github.com/repos/{repoOwner}/{repoName}/issues?state=closed`;
+    const closedIssuesResponse = await fetch(closedIssuesUrl, { headers: { Authorization: `Bearer ${token}` } });
+    const closedIssuesData = await closedIssuesResponse.json();
 
-    # Combine open and closed issues data
-    all_issues_data = {
-        "open_issues": open_issues_data,
-        "closed_issues": closed_issues_data
-    }
+    // Combine open and closed issues data
+    const allIssuesData = {
+        open_issues: openIssuesData,
+        closed_issues: closedIssuesData
+    };
 
-    # Export data to a JSON file
-    with open("issue_data.json", "w") as json_file:
-        json.dump(all_issues_data, json_file)
+    // Export data to a JSON file
+    fs.writeFileSync('issue_data.json', JSON.stringify(allIssuesData, null, 2));
+}
 
-if __name__ == "__main__":
-    export_issue_data()
+// Check if the script is run directly
+if (require.main === module) {
+    exportIssueData();
+}
