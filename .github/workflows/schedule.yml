@@ -1,0 +1,42 @@
+jobs:
+  fetch-issue-data:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Fetch Issue Data
+        run: |
+          # Set up the necessary variables
+          REPO_OWNER=${{ github.repository_owner }}
+          REPO_NAME=${{ github.repository_name }}
+          TOKEN=${{ secrets.GITHUB_TOKEN }}
+
+          # Fetch open issues data using the GitHub API
+          OPEN_ISSUES=$(curl -sSL -H "Authorization: Bearer $TOKEN" \
+            "https://api.github.com/repos/$REPO_OWNER/$REPO_NAME/issues?state=open")
+
+          # Fetch closed issues data using the GitHub API
+          CLOSED_ISSUES=$(curl -sSL -H "Authorization: Bearer $TOKEN" \
+            "https://api.github.com/repos/$REPO_OWNER/$REPO_NAME/issues?state=closed")
+
+          # Extract timestamps from open and closed issues
+          OPEN_ISSUE_TIMESTAMPS=$(echo $OPEN_ISSUES | jq -r '.[].created_at')
+          CLOSED_ISSUE_TIMESTAMPS=$(echo $CLOSED_ISSUES | jq -r '.[].closed_at')
+
+          # Print fetched data
+          echo "Open Issues:"
+          echo "$OPEN_ISSUES"
+
+          echo "Closed Issues:"
+          echo "$CLOSED_ISSUES"
+
+          echo "Open Issue Timestamps:"
+          echo "$OPEN_ISSUE_TIMESTAMPS"
+
+          echo "Closed Issue Timestamps:"
+          echo "$CLOSED_ISSUE_TIMESTAMPS"
+          
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
