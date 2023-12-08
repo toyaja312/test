@@ -25,6 +25,22 @@ async function exportIssueData() {
     // Export data to a JSON file
     fs.writeFileSync('issue_data.json', JSON.stringify(allIssuesData, null, 2));
 }
+const owner = 'toyaja312';
+const repo = 'test';
+const issueNumber = 1; // Replace with the actual issue or pull request number
+
+const apiUrl = `https://api.github.com/repos/${owner}/${repo}/issues/${issueNumber}/events`;
+
+fetch(apiUrl)
+  .then(response => response.json())
+  .then(events => {
+    const labelChangeEvents = events.filter(event => event.event === 'labeled' || event.event === 'unlabeled');
+
+    labelChangeEvents.forEach(event => {
+      console.log(`Label "${event.label.name}" changed at: ${event.updated_at}`);
+    });
+  })
+  .catch(error => console.error('Error fetching events:', error.message));
 
 // Check if the script is run directly
 if (require.main === module) {
