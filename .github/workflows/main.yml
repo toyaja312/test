@@ -1,0 +1,31 @@
+name: Import GitHub Issues Data to Google Spreadsheet
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  import-data:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '14'
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Run script
+      run: node import-script.js
+      env:
+        OWNER: ${{ secrets.GITHUB_REPOSITORY_OWNER }}
+        REPO: ${{ secrets.GITHUB_REPOSITORY_NAME }}
+        ISSUE_NUMBER: '1'  # Replace with the actual issue number
+        SHEET_ID: ${{ secrets.GOOGLE_SHEET_ID }}
+        GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
