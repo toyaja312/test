@@ -1,44 +1,43 @@
-const axios = require('axios');
+function importGitHubIssuesData() {
+  // Replace these with your own values
+  var owner = 'OWNER';
+  var repo = 'REPO';
+  var issueNumber = 'ISSUE_NUMBER';
 
-async function fetchGitHubIssueData(owner, repo, issueNumber) {
-  const apiUrl = `https://api.github.com/repos/${owner}/${repo}/issues/${issueNumber}`;
-  const response = await axios.get(apiUrl);
-  return response.data;
+  // Fetch issue data
+  var issueApiUrl = 'https://api.github.com/repos/' + owner + '/' + repo + '/issues/' + issueNumber;
+  var issueResponse = UrlFetchApp.fetch(issueApiUrl);
+  var issueData = JSON.parse(issueResponse.getContentText());
+
+  // Fetch timeline data
+  var timelineApiUrl = 'https://api.github.com/repos/' + owner + '/' + repo + '/issues/' + issueNumber + '/timeline';
+  var timelineResponse = UrlFetchApp.fetch(timelineApiUrl);
+  var timelineData = JSON.parse(timelineResponse.getContentText());
+
+  // Create a new Google Sheet
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().insertSheet('GitHub Issues Data');
+
+  // Write issue headers
+  var issueHeaders = Object.keys(issueData);
+  sheet.getRange(1, 1, 1, issueHeaders.length).setValues([issueHeaders]);
+
+  // Write issue data
+  var issueValues = [issueHeaders.map(function (header) {
+    return issueData[header];
+  })];
+  sheet.getRange(2, 1, 1, issueHeaders.length).setValues(issueValues);
+
+  // Write timeline headers
+  var timelineHeaders = Object.keys(timelineData[0]);
+  sheet.getRange(4, 1, 1, timelineHeaders.length).setValues([timelineHeaders]);
+
+  // Write timeline data
+  var timelineValues = timelineData.map(function (item) {
+    return timelineHeaders.map(function (header) {
+      return item[header];
+    });
+  });
+  sheet.getRange(5, 1, timelineValues.length, timelineHeaders.length).setValues(timelineValues);
+
+  Logger.log('Data imported successfully.');
 }
-
-async function fetchGitHubIssueTimeline(owner, repo, issueNumber) {
-  const apiUrl = `https://api.github.com/repos/${owner}/${repo}/issues/${issueNumber}/timeline`;
-  const response = await axios.get(apiUrl);
-  return response.data;
-}
-
-async function updateGoogleSheet(sheetId, apiKey, issueData, issueTimeline) {
-  // Assuming 'title' is available in issueData and 'event' is available in issueTimeline
-  const values = [[issueData.title, issueTimeline.event]]; 
-  const range = 'A1:B1';  // Update with the desired range
-
-  const apiUrl = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/Sheet1?key=${apiKey}`;
-
-  const response = await axios.put(apiUrl, { values, range });
-  return response.data;
-}
-
-async function run() {
-  const owner = process.env.OWNER;
-  const repo = process.env.REPO;
-  const issueNumber = process.env.ISSUE_NUMBER;
-  const sheetId = process.env.SHEET_ID;
-  const apiKey = process.env.GOOGLE_API_KEY;
-
-  const issueData = await fetchGitHubIssueData(owner, repo, issueNumber);
-  const issueTimeline = await fetchGitHubIssueTimeline(owner, repo, issueNumber);
-
-  const updateResult = await updateGoogleSheet(sheetId, apiKey, issueData, issueTimeline);
-
-  console.log('Data imported successfully:', updateResult);
-}
-
-run().catch(error => {
-  console.error('Error importing data:', error);
-  process.exit(1);
-});
