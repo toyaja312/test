@@ -2,7 +2,7 @@ function importGitHubIssuesData() {
   // Replace these with your own values
   var owner = 'Dartle-Sports';
   var repo = 'slt-academy-web';
-  var accessToken = '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'; // Replace with your GitHub access token
+  var accessToken = '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'; // Replace with your GitHub access token
 
   // Fetch all issues (both open and closed)
   var issuesApiUrl = 'https://api.github.com/repos/' + owner + '/' + repo + '/issues?state=all';
