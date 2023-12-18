@@ -1,17 +1,26 @@
 function importGitHubIssuesData() {
   // Replace these with your own values
-  var owner = 'OWNER';
-  var repo = 'REPO';
+  var owner = 'Dartle-Sports';
+  var repo = 'slt-academy-web';
   var issueNumber = 'ISSUE_NUMBER';
+  var accessToken = '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'; // Replace with your GitHub access token
 
   // Fetch issue data
   var issueApiUrl = 'https://api.github.com/repos/' + owner + '/' + repo + '/issues/' + issueNumber;
-  var issueResponse = UrlFetchApp.fetch(issueApiUrl);
+  var issueResponse = UrlFetchApp.fetch(issueApiUrl, {
+    headers: {
+      Authorization: 'Bearer ' + accessToken
+    }
+  });
   var issueData = JSON.parse(issueResponse.getContentText());
 
   // Fetch timeline data
   var timelineApiUrl = 'https://api.github.com/repos/' + owner + '/' + repo + '/issues/' + issueNumber + '/timeline';
-  var timelineResponse = UrlFetchApp.fetch(timelineApiUrl);
+  var timelineResponse = UrlFetchApp.fetch(timelineApiUrl, {
+    headers: {
+      Authorization: 'Bearer ' + accessToken
+    }
+  });
   var timelineData = JSON.parse(timelineResponse.getContentText());
 
   // Create a new Google Sheet
